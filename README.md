@@ -63,7 +63,7 @@ This version of sedutil is based off the original [@dta](https://github.com/Driv
 Unique to this repo are the following modifications:
 
 * SHA512 password hashing vs SHA1 on original SEDutil
-* Compatibile with AMD Ryzen and AMD Ryzen mobile systems
+* Compatible with AMD Ryzen and AMD Ryzen mobile systems
 
 
 ## Build Process
@@ -118,7 +118,7 @@ For the most comprehensive information, review this first:
 
 https://github.com/Drive-Trust-Alliance/sedutil/wiki/Encrypting-your-drive  
 
-Both the PBA and rescue systems use the us_english keyboard. This can cause issues when setting the password on your normal operating system if you use another keyboard mapping. To make sure the PBA recognizes your password you are encouraged to set up you drive from the rescue system as described on this page.
+Both the PBA and rescue systems use the us_english keyboard. This can cause issues when setting the password on your normal operating system if you use another keyboard mapping. To make sure the PBA recognizes your password you are encouraged to set up your drive from the rescue system as described on this page.
 
 # Prepare a bootable rescue system
 
@@ -265,7 +265,7 @@ Expected Output:
 - 14:22:21.590 INFO: MBRDone set on 
 ```
 
-#Your drive in now using OPAL locking.  
+#Your drive is now using OPAL locking.  
 
 You now need to COMPLETELY POWER DOWN YOUR SYSTEM  
 This will lock the drive so that when you restart your system it will boot the PBA.

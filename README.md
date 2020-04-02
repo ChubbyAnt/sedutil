@@ -72,7 +72,7 @@ Building is supported on Ubuntu 18.04.3 (LTS) x64. Other versions will probably 
 
 To compile your own version of `sedutil` you will need the standard development tools, an internet connection, and ~10 GB of disk space. 
 
-Prerequisites:  
+### Prerequisites:  
 
 ```
 sudo apt-get update && sudo apt-get upgrade -y  
@@ -81,13 +81,13 @@ sudo apt-get install build-essential autoconf pkg-config libc6-dev make g++-mult
 
 ```
 
-Automatically Build Everything:  
+### Automatically build everything:  
 
 ```
 git clone https://github.com/ChubbyAnt/sedutil && cd sedutil && autoreconf --install && ./configure && make all && cd images && ./getresources && ./buildpbaroot && ./buildbios && ./buildUEFI64 && ./buildrescue Rescue32 && ./buildrescue Rescue64 && cd ..
 ```
 
-Build Everything Manually Step by Step:  
+### Build everything manually step by step:  
 
 ```
 git clone https://github.com/ChubbyAnt/sedutil
@@ -120,7 +120,7 @@ https://github.com/Drive-Trust-Alliance/sedutil/wiki/Encrypting-your-drive
 
 Both the PBA and rescue systems use the us_english keyboard. This can cause issues when setting the password on your normal operating system if you use another keyboard mapping. To make sure the PBA recognizes your password you are encouraged to set up you drive from the rescue system as described on this page.
 
-# Prepare a bootable rescue system
+### Prepare a bootable rescue system
 
 These are the instructions for modern UEFI NVME equipped systems using SEDutil OPAL locking and unlocking utility as a windows pre-boot bootloader:
 
@@ -135,7 +135,8 @@ Note: Earlier versions of SEDutil also required BIOS enable of "legacy boot" or 
 
 Boot the USB thumb drive with the rescue system on it. You will see the Login prompt, enter "root" there is no password so you will get a root shell prompt.
 
-enter the command ```sedutil-cli --scan```
+Enter the command ```sedutil-cli --scan```  
+
 Expected Output:
 
 ```
@@ -151,7 +152,7 @@ No more disks present ending scan
 
 Verify that your drive has a 2 in the second column indicating OPAL 2 support. If it doesn't do not proceed, there is something that is preventing sedutil from supporting your drive. If you continue you may erase all of your data.
 
-# Test the PBA
+### Test the PBA
 
 Enter the command ```linuxpba``` and use a pass-phrase of ```debug```. If you don't use debug as the pass-phrase your system will reboot!
 Expected Output:
@@ -177,7 +178,7 @@ Issuing the commands in the steps that follow will enable OPAL locking. If you h
 
 The following steps use /dev/nvme0 as the device and UEFI64-1.15.img.gz for the PBA image, substitute the proper /dev/nvme? for your drive and the proper PBA name for your system
 
-#Enable Locking and the PBA  
+### Enable Locking and the PBA  
 
 Enter the commands below: (Use the password of debug for this test, it will be changed later)  
 ```
@@ -214,7 +215,7 @@ Expected Output:
 #
 ```
 
-# Test the PBA (yes again)  
+### Test the PBA (yes again)  
 
 Enter the command ```linuxpba``` and use a pass-phrase of debug  
 
@@ -238,7 +239,7 @@ Drive /dev/sdd   Samsung SSD 850 EVO 250GB                is OPAL NOT LOCKED
 
 Verify that the PBA unlocks your drive, it should say "is OPAL Unlocked" If it doesn't then you will need to follow the steps at the end of this page to either remove OPAL or disable locking.  
 
-#Set a real password  
+### Set a real password  
 
 The SID and Admin1 passwords do not have to match but it makes things easier.  
 ```
@@ -265,16 +266,16 @@ Expected Output:
 - 14:22:21.590 INFO: MBRDone set on 
 ```
 
-#Your drive in now using OPAL locking.  
+**Your drive is now using OPAL locking.**
 
 You now need to COMPLETELY POWER DOWN YOUR SYSTEM  
 This will lock the drive so that when you restart your system it will boot the PBA.
 
-#Recovery information:  
+## Recovery information:  
 
 If there is an issue after enabling locking you can either disable locking or remove OPAL to continue using your drive without locking.  
 
-If you want to disable Locking and the PBA:  
+**If you want to disable Locking and the PBA:**  
 
 ```
 sedutil-cli -–disableLockingRange 0 <password> <drive>  
@@ -307,7 +308,7 @@ Expected Output:
 
 Some OPAL drives have a firmware bug that will erase all of your data if you issue the commands below. See [Remove OPAL](https://github.com/Drive-Trust-Alliance/sedutil/wiki/Remove-OPAL) for a list of drive/firmware pairs that is know to have been tested.  
 
-#To remove OPAL issue these commands:  
+**To remove OPAL issue these commands:**
 
 ```
 sedutil-cli --revertnoerase <password> <drive>

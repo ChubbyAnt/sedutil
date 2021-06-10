@@ -64,6 +64,7 @@ Unique to this repo are the following modifications:
 
 * SHA512 password hashing vs SHA1 on original SEDutil
 * Compatibile with AMD Ryzen and AMD Ryzen mobile systems
+* Supports S3 sleep
 
 
 ## Build Process
@@ -238,7 +239,7 @@ Drive /dev/sdd   Samsung SSD 850 EVO 250GB                is OPAL NOT LOCKED
 
 Verify that the PBA unlocks your drive, it should say "is OPAL Unlocked" If it doesn't then you will need to follow the steps at the end of this page to either remove OPAL or disable locking.  
 
-#Set a real password  
+# Set a real password  
 
 The SID and Admin1 passwords do not have to match but it makes things easier.  
 ```
@@ -270,7 +271,48 @@ Expected Output:
 You now need to COMPLETELY POWER DOWN YOUR SYSTEM  
 This will lock the drive so that when you restart your system it will boot the PBA.
 
-##Recovery information:  
+## S3 sleep support
+
+To make the machine able to recover from sleep,  the following is needed:
+* Kernel 4.13 or later
+* this patched sedutil-cli
+* following the guide here: https://github.com/ladar/sedutil/issues/4#issue-482078217 , (which in turn was born from Drive-Trust-Alliance/sedutil#90). For completeness, mirrored below:
+
+1. (Optional for NVME drives, required for SATA) Edit /etc/default/grub to append `libata.allow_tpm=1` to the end the line GRUB_CMDLINE_LINUX_DEFAULT= 
+
+2. (Optional for NVME drives, required for SATA) Update `grub.cfg` by running # `update-grub`
+
+3. Download (or build) the Linux binary from the release of this repo; extract and have it ready to run
+
+4. (Optional for NVME drives, required for SATA) Reboot
+
+5. Find your encryption key by 
+```
+# sedutil-cli --printPasswordHash <password> /dev/nvme?
+```
+(namespace needs to be included for NVMe, e.g. /dev/nvme0n1; same for the following)
+
+6. Add a systemd service that will execute the following command that will tell the kernel what password to use after wakeup. Note that the password needs to be in the hashed format already.
+
+```
+# sedutil-cli -n -x --prepareForS3Sleep 0 Admin1 <password hash> /dev/nvme?
+```
+Below is my /etc/systemd/system/seds3sleep.service
+  
+```
+[Service]
+Type=oneshot
+ExecStart=/opt/sedutil-1.15.1-87/sedutil-cli -n -x --prepareForS3Sleep 0 Admin1 <my password hash> /dev/nvme?
+
+[Install]
+WantedBy=multi-user.target
+Enable this service. # systemctl enable seds3sleep.service && systemctl start seds3sleep.service
+```
+
+**NOTE:** if you have multiple disks, you may want to include multiple `ExecStart` commands, and ideally try all the disks for all passwords as their numbers may randomly change. So for 2 disks having different passwords you may want to include 4 ExecStart statements.
+
+
+# Recovery information:  
 
 If there is an issue after enabling locking you can either disable locking or remove OPAL to continue using your drive without locking.  
 
@@ -307,7 +349,7 @@ Expected Output:
 
 Some OPAL drives have a firmware bug that will erase all of your data if you issue the commands below. See [Remove OPAL](https://github.com/Drive-Trust-Alliance/sedutil/wiki/Remove-OPAL) for a list of drive/firmware pairs that is know to have been tested.  
 
-##To remove OPAL issue these commands:  
+## To remove OPAL issue these commands:  
 
 ```
 sedutil-cli --revertnoerase <password> <drive>
@@ -350,6 +392,4 @@ Expected output:
 ```
 
 When this is finished the drive will be in a non-opal managed state. This would allow you to do anything that you could have done before starting OPAL management under OPAL. You can also reinitiate OPAL management if you wish.
-  
-  
   

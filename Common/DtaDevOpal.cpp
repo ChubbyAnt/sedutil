@@ -24,7 +24,7 @@ along with sedutil.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
-#include <iomanip>
+#include<iomanip>
 #include "DtaDevOpal.h"
 #include "DtaHashPwd.h"
 #include "DtaEndianFixup.h"
@@ -33,6 +33,7 @@ along with sedutil.  If not, see <http://www.gnu.org/licenses/>.
 #include "DtaResponse.h"
 #include "DtaSession.h"
 #include "DtaHexDump.h"
+#include "DtaAnnotatedDump.h"
 
 using namespace std;
 
@@ -70,13 +71,8 @@ uint8_t DtaDevOpal::initialSetup(char * password)
 		LOG(E) << "Initial setup failed - unable to set global locking range RW";
 		return lastRC;
 	}
-	if ((lastRC = setMBRDone(1, password)) != 0){
-		LOG(E) << "Initial setup failed - unable to Enable MBR shadow";
-		return lastRC;
-	}
-	if ((lastRC = setMBREnable(1, password)) != 0){
-		LOG(E) << "Initial setup failed - unable to Enable MBR shadow";
-		return lastRC;
+	if (!MBRAbsent()) {
+		setMBREnable(1, password);
 	}
 	
 	LOG(I) << "Initial setup of TPer complete on " << dev;
@@ -587,7 +583,7 @@ uint8_t DtaDevOpal::rekeyLockingRange_SUM(vector<uint8_t> LR, vector<uint8_t>  U
 }
 uint8_t DtaDevOpal::setBandsEnabled(int16_t lockingrange, char * password)
 {
-	if (password == NULL) { LOG(D4) << "Password is NULL"; } // unreferenced formal parameter
+	if (password == NULL) { LOG(D4) << "Password is NULL"; } // unreferenced formal paramater
 	LOG(D1) << "Entering DtaDevOpal::setBandsEnabled()" << lockingrange << " " << dev;
 	LOG(I) << "setBandsEnabled is not implemented.  It is not part of the Opal SSC ";
 	LOG(D1) << "Exiting DtaDevOpal::setBandsEnabled()";
@@ -638,6 +634,7 @@ uint8_t DtaDevOpal::revertLockingSP(char * password, uint8_t keep)
 	// empty list returned so rely on method status
 	LOG(I) << "Revert LockingSP complete";
 	session->expectAbort();
+	delete cmd;
 	delete session;
 	LOG(D1) << "Exiting DtaDevOpal::revertLockingSP()";
 	return 0;
@@ -1110,13 +1107,13 @@ uint8_t DtaDevOpal::revertTPer(char * password, uint8_t PSID, uint8_t AdminSP)
 	cmd->addToken(OPAL_TOKEN::STARTLIST);
 	cmd->addToken(OPAL_TOKEN::ENDLIST);
 	cmd->complete();
-	session->expectAbort();
 	if ((lastRC = session->sendCommand(cmd, response)) != 0) {
 		delete cmd;
 		delete session;
 		return lastRC;
 	}
 	LOG(I) << "revertTper completed successfully";
+	session->expectAbort();
 	delete cmd;
 	delete session;
 	LOG(D1) << "Exiting DtaDevOpal::revertTPer()";
@@ -1484,6 +1481,7 @@ uint8_t DtaDevOpal::setSIDPassword(char * oldpassword, char * newpassword,
 		delete session;
 		return lastRC;
 	}
+	LOG(I) << "SID password changed";
 	delete session;
 	LOG(D1) << "Exiting DtaDevOpal::setSIDPassword()";
 	return 0;
@@ -1567,6 +1565,7 @@ uint8_t DtaDevOpal::exec(DtaCommand * cmd, DtaResponse & resp, uint8_t protocol)
 	uint8_t lastRC;
     OPALHeader * hdr = (OPALHeader *) cmd->getCmdBuffer();
     LOG(D3) << endl << "Dumping command buffer";
+    IFLOG(D) DtaAnnotatedDump(IF_SEND, cmd->getCmdBuffer(), cmd->outputBufferSize());
     IFLOG(D3) DtaHexDump(cmd->getCmdBuffer(), SWAP32(hdr->cp.length) + sizeof (OPALComPacket));
     if((lastRC = sendCmd(IF_SEND, protocol, comID(), cmd->getCmdBuffer(), cmd->outputBufferSize())) != 0) {
 		LOG(E) << "Command failed on send " << (uint16_t) lastRC;
@@ -1581,6 +1580,7 @@ uint8_t DtaDevOpal::exec(DtaCommand * cmd, DtaResponse & resp, uint8_t protocol)
     }
     while ((0 != hdr->cp.outstandingData) && (0 == hdr->cp.minTransfer));
     LOG(D3) << std::endl << "Dumping reply buffer";
+    IFLOG(D) DtaAnnotatedDump(IF_RECV, cmd->getRespBuffer(), SWAP32(hdr->cp.length) + sizeof (OPALComPacket));
     IFLOG(D3) DtaHexDump(cmd->getRespBuffer(), SWAP32(hdr->cp.length) + sizeof (OPALComPacket));
 	if (0 != lastRC) {
         LOG(E) << "Command failed on recv" << (uint16_t) lastRC;

@@ -60,7 +60,7 @@ DataStore function (0x0202)
 OPAL 2.0 function (0x0203)
     Base comID = 0x1000, Initial PIN = 0x0, Reverted PIN = 0x0, comIDs = 1
     Locking Admins = 4, Locking Users = 9, Range Crossing = N
-root@r0m30-PC:~# ./setutil-cli --yesIreallywanttoERASEALLmydatausingthePSID <PSIDALLCAPSNODASHES> /dev/sd8
+root@r0m30-PC:~# ./setutil-cli --yesIreallywanttoERASE*ALL*mydatausingthePSID <PSIDALLCAPSNODASHES> /dev/sd8
 - 01:14:10.996 INFO: Performing a PSID Revert on /dev/sd8 with password <PSIDALLCAPSNODASHES>
 - 01:14:11.165 INFO: revertTper completed successfully
 root@r0m30-PC:~# 

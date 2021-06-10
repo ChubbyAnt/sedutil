@@ -30,7 +30,7 @@ sed -i '/menu "System tools"/a \\tsource "package/sedutil/Config.in"' package/Co
 cp -r ../../buildroot/packages/sedutil/ package/
 # Make a distribution from the current source
 cd ../../..
-autoreconf -i
+autoreconf 
 ./configure
 make dist
 mkdir images/scratch/buildroot/dl/
@@ -48,9 +48,9 @@ cd ..
 
 # build the rootfs for 64 and 32 bit systems
 echo Making the 64bit PBA Linux system
-make O=64bit 2>&1 | tee 64bit/build_output.txt
+make -j12 O=64bit 2>&1 | tee 64bit/build_output.txt
 echo Making the 32bit PBA Linux system
-make O=32bit 2>&1 | tee 32bit/build_output.txt
+make -j12 O=32bit 2>&1 | tee 32bit/build_output.txt
 # back to where we started
 cd ../..
 exit 0

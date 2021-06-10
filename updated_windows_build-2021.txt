@@ -1,0 +1,21 @@
+Install Microsoft Visual Studio 2015
+Add C++ tools to VS2015
+In Windows Powershell, VIA Powershell:
+set-executionpolicy unrestricted
+-> change back when you are done with these steps!
+set-executionpolicy RemoteSigned
+Verify policy reset:
+get-executionpolicy
+Via an elevated command prompt:
+c:\windows\syswow64\WindowsPowerShell\v1.0\powershell.exe -command set-executionpolicy -Scope CurrentUser unrestricted
+-> change back when you are done with these steps!
+c:\windows\syswow64\WindowsPowerShell\v1.0\powershell.exe -command set-executionpolicy -Scope CurrentUser Restricted
+Verify policy reset:
+c:\windows\syswow64\WindowsPowerShell\v1.0\powershell.exe -command get-executionpolicy
+Open VS2015
+Open -> Project/Solution -> sedutil/windows/CLI/CLI.sln
+Project -> Retarget Solution -> 8.1
+Build -> Configuration Manager -> Configuration -> Release
+Build -> Build Solution
+This should build the windows executable sedutil.exe
+Make sure to change the policies back in 3 and 4 above.

@@ -242,7 +242,7 @@ Verify that the PBA unlocks your drive, it should say "is OPAL Unlocked" If it d
 
 The SID and Admin1 passwords do not have to match but it makes things easier.  
 ```
-edutil-cli --setsidpassword debug yourrealpassword /dev/nvme0
+sedutil-cli --setsidpassword debug yourrealpassword /dev/nvme0
 sedutil-cli --setadmin1pwd debug yourrealpassword /dev/nvme0
 ```
 

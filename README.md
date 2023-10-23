@@ -270,7 +270,7 @@ Expected Output:
 You now need to COMPLETELY POWER DOWN YOUR SYSTEM  
 This will lock the drive so that when you restart your system it will boot the PBA.
 
-##Recovery information:  
+## Recovery information:  
 
 If there is an issue after enabling locking you can either disable locking or remove OPAL to continue using your drive without locking.  
 
@@ -307,7 +307,7 @@ Expected Output:
 
 Some OPAL drives have a firmware bug that will erase all of your data if you issue the commands below. See [Remove OPAL](https://github.com/Drive-Trust-Alliance/sedutil/wiki/Remove-OPAL) for a list of drive/firmware pairs that is know to have been tested.  
 
-##To remove OPAL issue these commands:  
+### To remove OPAL issue these commands:  
 
 ```
 sedutil-cli --revertnoerase <password> <drive>
